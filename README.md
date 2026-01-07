@@ -74,17 +74,20 @@ go-clean-boiler/
 ### Option 1: Using Docker (Recommended)
 
 1. **Clone the repository**
+
 ```bash
-git clone <repository-url>
+git clone https://github.com/firdanbash/go-clean-boiler.git
 cd go-clean-boiler
 ```
 
 2. **Copy environment file**
+
 ```bash
 cp .env.example .env
 ```
 
 3. **Start with Docker Compose**
+
 ```bash
 make docker-up
 ```
@@ -94,39 +97,46 @@ The API will be available at `http://localhost:8080`
 ### Option 2: Local Development
 
 1. **Clone the repository**
+
 ```bash
 git clone <repository-url>
 cd go-clean-boiler
 ```
 
 2. **Install dependencies**
+
 ```bash
 make deps
 ```
 
 3. **Set up PostgreSQL**
+
 ```bash
 # Create database
 createdb go_clean_boiler
 ```
 
 4. **Copy and configure environment**
+
 ```bash
 cp .env.example .env
 # Edit .env with your database credentials
 ```
 
 5. **Run migrations** (optional, auto-migration is enabled)
+
 ```bash
 make migrate-up
 ```
 
 6. **Run with hot reload**
+
 ```bash
 make dev
 ```
 
 Or run without hot reload:
+
 ```bash
 make run
 ```
@@ -229,6 +239,7 @@ make migrate-create name=create_products_table
 ```
 
 Edit the generated migration file:
+
 ```sql
 -- migrations/000002_create_products_table.up.sql
 CREATE TABLE IF NOT EXISTS products (
@@ -242,6 +253,7 @@ CREATE TABLE IF NOT EXISTS products (
 ```
 
 Run migration:
+
 ```bash
 make migrate-up
 ```
@@ -249,6 +261,7 @@ make migrate-up
 ### 2. Create Entity (Domain)
 
 Create `internal/domain/product.go`:
+
 ```go
 package domain
 
@@ -270,6 +283,7 @@ type Product struct {
 ### 3. Create DTOs
 
 Create `internal/dto/request/product_request.go`:
+
 ```go
 package request
 
@@ -285,6 +299,7 @@ type UpdateProductRequest struct {
 ```
 
 Create `internal/dto/response/product_response.go`:
+
 ```go
 package response
 
@@ -302,6 +317,7 @@ type ProductResponse struct {
 ### 4. Create Repository
 
 Create interface in `internal/repository/product_repository.go`:
+
 ```go
 package repository
 
@@ -317,6 +333,7 @@ type ProductRepository interface {
 ```
 
 Create implementation in `internal/repository/postgres/product_repository.go`:
+
 ```go
 package postgres
 
@@ -340,6 +357,7 @@ func NewProductRepository(db *gorm.DB) repository.ProductRepository {
 ### 5. Create Service
 
 Create `internal/service/product_service.go`:
+
 ```go
 package service
 
@@ -371,6 +389,7 @@ func NewProductService(repo repository.ProductRepository) ProductService {
 ### 6. Create Handler
 
 Create `internal/handler/product_handler.go`:
+
 ```go
 package handler
 
@@ -397,6 +416,7 @@ func (h *ProductHandler) Create(c *gin.Context) {
 ### 7. Register Routes
 
 Edit `internal/router/router.go`:
+
 ```go
 // Add to SetupRouter function
 products := v1.Group("/products")
@@ -413,6 +433,7 @@ products.Use(middleware.AuthMiddleware(jwtSecret))
 ### 8. Wire Dependencies
 
 Edit `cmd/api/main.go`:
+
 ```go
 // Initialize repositories
 productRepo := postgres.NewProductRepository(database.DB)
@@ -459,6 +480,7 @@ log:
 ### Environment Variables
 
 Environment variables override config file values:
+
 - `APP_PORT`
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
 - `JWT_SECRET`, `JWT_EXPIRATION`
@@ -546,15 +568,18 @@ This project is licensed under the MIT License.
 ## 🆘 Troubleshooting
 
 ### Database connection failed
+
 - Make sure PostgreSQL is running
 - Check database credentials in `.env`
 - If using Docker, ensure containers are running: `docker-compose ps`
 
 ### Air not found
+
 - Run `go install github.com/cosmtrek/air@latest`
 - Make sure `$GOPATH/bin` is in your PATH
 
 ### Migrations not running
+
 - Install migrate CLI: `brew install golang-migrate` (macOS) or download from [releases](https://github.com/golang-migrate/migrate/releases)
 - Alternatively, use auto-migration (enabled by default)
 
