@@ -153,9 +153,10 @@ make clean         # Clean build files
 make docker-up     # Start Docker containers
 make docker-down   # Stop Docker containers
 make docker-logs   # View Docker logs
-make migrate-up    # Run database migrations
+make migrate-up    # Run database migrations (uses Docker if migrate CLI not found)
 make migrate-down  # Rollback database migrations
 make migrate-create name=migration_name  # Create new migration
+make migrate-install  # Install golang-migrate CLI
 make tidy          # Tidy go modules
 make deps          # Download dependencies
 ```
@@ -579,9 +580,10 @@ This project is licensed under the MIT License.
 - Make sure `$GOPATH/bin` is in your PATH
 
 ### Migrations not running
-
-- Install migrate CLI: `brew install golang-migrate` (macOS) or download from [releases](https://github.com/golang-migrate/migrate/releases)
-- Alternatively, use auto-migration (enabled by default)
+- The Makefile will automatically use Docker-based migrations if `migrate` CLI is not installed
+- To install migrate CLI manually: `make migrate-install`
+- Alternatively, use auto-migration (enabled by default in main.go)
+- For Docker-based migrations, ensure database container is running: `docker compose up -d postgres`
 
 ## 📬 Contact
 

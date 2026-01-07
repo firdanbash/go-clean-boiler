@@ -1,4 +1,4 @@
-.PHONY: help dev build run test clean docker-up docker-down migrate-up migrate-down migrate-create
+.PHONY: help dev build run test clean docker-up docker-down migrate-up migrate-down migrate-create migrate-install
 
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -41,18 +41,42 @@ docker-logs: ## View Docker logs
 
 migrate-up: ## Run database migrations up
 	@echo "Running migrations..."
-	@migrate -path migrations -database "postgresql://postgres:postgres@localhost:5432/go_clean_boiler?sslmode=disable" up
+	@if command -v migrate > /dev/null; then \
+		migrate -path migrations -database "postgresql://postgres:postgres@localhost:5432/go_clean_boiler?sslmode=disable" up; \
+	else \
+		echo "migrate CLI not found. Using Docker..."; \
+		docker run --rm -v $(PWD)/migrations:/migrations --network host migrate/migrate \
+			-path=/migrations -database "postgresql://postgres:postgres@localhost:5432/go_clean_boiler?sslmode=disable" up; \
+	fi
 
 migrate-down: ## Rollback database migrations
 	@echo "Rolling back migrations..."
-	@migrate -path migrations -database "postgresql://postgres:postgres@localhost:5432/go_clean_boiler?sslmode=disable" down
+	@if command -v migrate > /dev/null; then \
+		migrate -path migrations -database "postgresql://postgres:postgres@localhost:5432/go_clean_boiler?sslmode=disable" down; \
+	else \
+		echo "migrate CLI not found. Using Docker..."; \
+		docker run --rm -v $(PWD)/migrations:/migrations --network host migrate/migrate \
+			-path=/migrations -database "postgresql://postgres:postgres@localhost:5432/go_clean_boiler?sslmode=disable" down; \
+	fi
 
 migrate-create: ## Create a new migration file (usage: make migrate-create name=create_users_table)
 	@if [ -z "$(name)" ]; then \
 		echo "Error: name is required. Usage: make migrate-create name=your_migration_name"; \
 		exit 1; \
 	fi
-	@migrate create -ext sql -dir migrations -seq $(name)
+	@if command -v migrate > /dev/null; then \
+		migrate create -ext sql -dir migrations -seq $(name); \
+	else \
+		echo "migrate CLI not found. Using Docker..."; \
+		docker run --rm -v $(PWD)/migrations:/migrations migrate/migrate \
+			create -ext sql -dir /migrations -seq $(name); \
+	fi
+
+migrate-install: ## Install golang-migrate CLI
+	@echo "Installing golang-migrate..."
+	@go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	@echo "migrate installed successfully!"
+
 
 tidy: ## Tidy go modules
 	@echo "Tidying go modules..."
