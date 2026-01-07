@@ -30,14 +30,14 @@ clean: ## Clean build files
 
 docker-up: ## Start Docker containers
 	@echo "Starting Docker containers..."
-	@docker-compose up -d
+	@docker compose up -d
 
 docker-down: ## Stop Docker containers
 	@echo "Stopping Docker containers..."
-	@docker-compose down
+	@docker compose down
 
 docker-logs: ## View Docker logs
-	@docker-compose logs -f
+	@docker compose logs -f
 
 migrate-up: ## Run database migrations up
 	@echo "Running migrations..."

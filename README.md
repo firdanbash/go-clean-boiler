@@ -506,7 +506,7 @@ go test -cover ./...
 ### Docker Deployment
 
 ```bash
-# Build and run with Docker Compose
+# Build and run
 make docker-up
 
 # View logs
@@ -571,7 +571,7 @@ This project is licensed under the MIT License.
 
 - Make sure PostgreSQL is running
 - Check database credentials in `.env`
-- If using Docker, ensure containers are running: `docker-compose ps`
+- If using Docker, ensure containers are running: `docker compose ps`
 
 ### Air not found
 
