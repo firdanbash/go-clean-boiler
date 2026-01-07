@@ -1,0 +1,23 @@
+app:
+  name: go-clean-boiler
+  env: development
+  port: 8080
+
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  name: go_clean_boiler
+  sslmode: disable
+  max_open_conns: 25
+  max_idle_conns: 25
+  conn_max_lifetime: 5m
+
+jwt:
+  secret: your-secret-key-change-this-in-production
+  expiration: 24h
+
+log:
+  level: debug
+  encoding: console  # json or console
